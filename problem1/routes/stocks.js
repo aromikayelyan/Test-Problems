@@ -1,6 +1,6 @@
 import { Router } from "express"
-import { v4 as uuidv4 } from "uuid"
-import { isstock, stockcreate, getproducts, getallprod, marketget, isstockbyplu, isstockbyshop, marketgetbyid, marketgetbyuid } from "../querryies/dbquerryes.js"
+import { isstock, stockcreate, getproducts, getallprod, marketget, isstockbyplu, isstockbyshop, 
+        marketgetbyid, marketgetbyuid, getbyorder, getbyshelf} from "../querryies/dbquerryes.js"
 import connection from "../utils/connect.js"
 
 
@@ -57,10 +57,10 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.put('/inkr', async (req, res) => {
+router.put('/addcount', async (req, res) => {
     try {
-        const plu = req.body.plu
-        const market = req.body.market
+        const {plu, market_name, marked_address, count } = req.body
+
         
     } catch (e) {
         console.log(e)
@@ -68,10 +68,12 @@ router.put('/inkr', async (req, res) => {
     }
 })
 
-router.put('/decr', async (req, res) => {
+router.put('/reducecount', async (req, res) => {
     try {
-        const plu = req.body.plu
-        const market = req.body.market
+        const {plu, market_name, marked_address, count } = req.body
+        
+
+       
         
     } catch (e) {
         console.log(e)
@@ -137,9 +139,34 @@ router.get('/plu/:plu', async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/byorder', async (req, res) => {
     try {
-        
+        connection.query(getbyorder, (err, joinresults) => {
+            if (err) {
+                console.error('Ошибка при выполнении запроса: ', err);
+                return res.status(500).send('Ошибка сервера');
+            } if (joinresults.length == 0) {
+                return res.status(404).json({ message: 'Прдукт не найден' });
+            }
+            return res.status(200).json(joinresults);
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({ message: 'error, try again' })
+    }
+})
+
+router.get('/byshelf', async (req, res) => {
+    try {
+        connection.query(getbyshelf, (err, joinresults) => {
+            if (err) {
+                console.error('Ошибка при выполнении запроса: ', err);
+                return res.status(500).send('Ошибка сервера');
+            } if (joinresults.length == 0) {
+                return res.status(404).json({ message: 'Прдукт не найден' });
+            }
+            return res.status(200).json(joinresults);
+        })
     } catch (e) {
         console.log(e)
         res.status(500).json({ message: 'error, try again' })
@@ -211,20 +238,6 @@ router.get('/shop/:id', async (req, res) => {
         res.status(500).json({ message: 'error, try again' })
     }
 })
-
-
-
-router.delete('/', async (req, res) => {
-    try {
-
-    } catch (e) {
-        console.log(e)
-        res.status(500).json({ message: 'error, try again' })
-    }
-})
-
-
-
 
 
 export default router
