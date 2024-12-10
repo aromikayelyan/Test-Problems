@@ -10,7 +10,7 @@ CREATE TABLE `actionsHistory` (
 CREATE TABLE `markets` (
             id INT AUTO_INCREMENT PRIMARY KEY,
             market_name VARCHAR(255) NOT NULL,
-            marked_address VARCHAR(255) NOT NULL,
+            market_address VARCHAR(255) NOT NULL,
             uid VARCHAR(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

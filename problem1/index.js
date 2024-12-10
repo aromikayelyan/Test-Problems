@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import products from './routes/products.js'
 import market from './routes/market.js'
 import stocks from './routes/stocks.js'
+import actions from './routes/actions.js'
+
 
 
 
@@ -27,6 +29,8 @@ app.use(cors())
 app.use('/products', products)
 app.use('/market', market)
 app.use('/stocks', stocks)
+app.use('/actions', actions)
+
 
 
 

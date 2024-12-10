@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { isstock, stockcreate, getproducts, getallprod, marketget, isstockbyplu, isstockbyshop, 
-        marketgetbyid, marketgetbyuid, getbyorder, getbyshelf} from "../querryies/dbquerryes.js"
+        marketgetbyid, marketgetbyuid, getbyorder, getbyshelf, actionadd, stockeadd, getstockcount} from "../querryies/dbquerryes.js"
 import connection from "../utils/connect.js"
 
 
@@ -45,8 +45,15 @@ router.post('/', async (req, res) => {
                             return res.status(500).send('Ошибка сервера');
                         }if(results.length == 0 ){
                             return res.status(404).json({message:'stock не найден'});
-                        }
-                        return res.status(200).json({message: "данныие добавлены"});
+                        }connection.query(actionadd, [prodresults[0].uid, markresults[0].uid, 'add product to stock' ], (err, results) =>{
+                            if (err) {
+                                console.error('Ошибка при выполнении запроса: ', err);
+                                return res.status(500).send('Ошибка сервера');
+                            }if(results.length == 0 ){
+                                return res.status(404).json({message:'action db не найден'});
+                            }
+                            return res.status(200).json({message: "данные добавлены"});
+                        })
                     })
                 })
             }) 
@@ -59,9 +66,51 @@ router.post('/', async (req, res) => {
 
 router.put('/addcount', async (req, res) => {
     try {
-        const {plu, market_name, marked_address, count } = req.body
-
-        
+        const { plu, market_name, market_address, count } = req.body
+        if (!market_address || !plu || !market_name || !count) {
+            return res.status(400).json({ message: 'market address and PLU are required' });
+        }
+        connection.query(getproducts, [plu], (err, prodresults) => {
+            if (err) {
+                console.error('Ошибка при выполнении запроса: ', err);
+                return res.status(500).send('Ошибка сервера');
+            } if (prodresults.length == 0) {
+                return res.status(404).json({ message: 'Прдукт не найден' });
+            }
+            connection.query(marketget, [market_name, market_address], (err, markresults) => {
+                if (err) {
+                    console.error('Ошибка при выполнении запроса: ', err);
+                    return res.status(500).send('Ошибка сервера');
+                } if (markresults.length == 0) {
+                    return res.status(404).json({ message: 'Магазин не найден' });
+                }
+                connection.query(getstockcount, [prodresults[0].uid, markresults[0].uid], (err, stockresults) => {
+                    if (err) {
+                        console.error('Ошибка при выполнении запроса: ', err);
+                        return res.status(500).send('Ошибка сервера');
+                    } if (stockresults.length == 0) {
+                        return res.status(404).json({ message: 'Прдукт не найден' });
+                    }
+                    connection.query(stockeadd, [count + stockresults[0].quantity_on_order, prodresults[0].uid, markresults[0].uid], (err, results) => {
+                        if (err) {
+                            console.error('Ошибка при выполнении запроса: ', err);
+                            return res.status(500).send('Ошибка сервера');
+                        } if (prodresults.length == 0) {
+                            return res.status(404).json({ message: 'Прдукт не найден' });
+                        }
+                    connection.query(actionadd, [prodresults[0].uid, markresults[0].uid, `Добавлено количество товаров на заказ в количесте - ${count}`], (err, results) => {
+                        if (err) {
+                            console.error('Ошибка при выполнении запроса: ', err);
+                            return res.status(500).send('Ошибка сервера');
+                        } if (results.length == 0) {
+                            return res.status(404).json({ message: 'action db не найден' });
+                        }
+                        return res.status(200).json({ message: "данные обновлены" });
+                    })
+                })
+            })
+        })
+    })
     } catch (e) {
         console.log(e)
         res.status(500).json({ message: 'error, try again' })
@@ -70,11 +119,53 @@ router.put('/addcount', async (req, res) => {
 
 router.put('/reducecount', async (req, res) => {
     try {
-        const {plu, market_name, marked_address, count } = req.body
-        
-
-       
-        
+        const { plu, market_name, market_address, count } = req.body
+        if (!market_address || !plu || !market_name || !count) {
+            return res.status(400).json({ message: 'market address and PLU are required' });
+        }
+        connection.query(getproducts, [plu], (err, prodresults) => {
+            if (err) {
+                console.error('Ошибка при выполнении запроса: ', err);
+                return res.status(500).send('Ошибка сервера');
+            } if (prodresults.length == 0) {
+                return res.status(404).json({ message: 'Прдукт не найден' });
+            }
+            connection.query(marketget, [market_name, market_address], (err, markresults) => {
+                if (err) {
+                    console.error('Ошибка при выполнении запроса: ', err);
+                    return res.status(500).send('Ошибка сервера');
+                } if (markresults.length == 0) {
+                    return res.status(404).json({ message: 'Магазин не найден' });
+                }
+                connection.query(getstockcount, [prodresults[0].uid, markresults[0].uid], (err, stockresults) => {
+                    if (err) {
+                        console.error('Ошибка при выполнении запроса: ', err);
+                        return res.status(500).send('Ошибка сервера');
+                    } if(stockresults.length == 0) {
+                        return res.status(404).json({ message: 'Прдукт не найден' });
+                    }if(stockresults[0].quantity_on_order - count < 0 || count < 0){
+                        return res.status(404).json({message:`После изменения получается отрицательное число, или count сам меньше нуля, сверьте данные и проверьте еще. В заказе - ${stockresults[0].quantity_on_order}`})
+                    }
+                    connection.query(stockeadd, [stockresults[0].quantity_on_order - count, prodresults[0].uid, markresults[0].uid], (err, results) => {
+                        if (err) {
+                            console.error('Ошибка при выполнении запроса: ', err);
+                            return res.status(500).send('Ошибка сервера');
+                        } if (prodresults.length == 0) {
+                            return res.status(404).json({ message: 'Прдукт не найден' });
+                        }
+                        connection.query(actionadd, [prodresults[0].uid, markresults[0].uid, `Убавлено количество товаров на заказ в количесте - ${count}`], (err, results) => {
+                            if (err) {
+                                console.error('Ошибка при выполнении запроса: ', err);
+                                return res.status(500).send('Ошибка сервера');
+                            } if (results.length == 0) {
+                                return res.status(404).json({ message: 'action db не найден' });
+                            }
+                            return res.status(200).json({ message: "данные обновлены" });
+                        })
+                    })
+                })
+            })
+        })
     } catch (e) {
         console.log(e)
         res.status(500).json({ message: 'error, try again' })
