@@ -55,7 +55,7 @@ export const getactionsbydate = `
                              ORDER BY  actionshistory.created_at
                              `
 export const getactionsbyplu = `
-                             SELECT market_name,market_address,product_name,product_plu, actions, actionshistory.created_at 
+                             SELECT market_name,market_address,product_name,product_plu, actions, actionshistory.created_at
                              FROM actionshistory
                              JOIN markets ON markets.uid = actionshistory.shop_id
                              JOIN products ON products.uid = actionshistory.product_id
@@ -77,10 +77,16 @@ export const getactionsbyshop = `
                              WHERE markets.id = ?
                              ORDER BY actions
                              `                                                          
+export const getprobydaction = `
+                             SELECT product_name, product_plu, actions, actionshistory.created_at 
+                             FROM actionshistory
+                             JOIN products ON products.uid = actionshistory.product_id
+                             WHERE products.uid = ?
+                             ORDER BY actions
+                             `
 
 
 
 
-
-
+                             
 //SET SQL_SAFE_UPDATES = 0;
