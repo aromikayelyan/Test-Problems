@@ -1,0 +1,93 @@
+[
+    {
+        "name": "Ivan",
+        "surname": "Ivanov",
+        "age": 23,
+        "gender": "male",
+        "problems": true
+    },
+    {
+        "name": "Anton",
+        "surname": "Sergeev",
+        "age": 55,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Nikolay",
+        "surname": "Dovlatov",
+        "age": 15,
+        "gender": "male",
+        "problems": true
+    },
+    {
+        "name": "Andey",
+        "surname": "Voronin",
+        "age": 42,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Igor",
+        "surname": "Morozov",
+        "age": 21,
+        "gender": "male",
+        "problems": true
+    },
+    {
+        "name": "David",
+        "surname": "Vasilev",
+        "age": 27,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Kirill",
+        "surname": "Kolodochka",
+        "age": 27,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Simak",
+        "surname": "Sergeev",
+        "age": 55,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "VAlerii",
+        "surname": "Agutin",
+        "age": 15,
+        "gender": "male",
+        "problems": true
+    },
+    {
+        "name": "Nikolay",
+        "surname": "Krug",
+        "age": 42,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Vasilii",
+        "surname": "Morozov",
+        "age": 21,
+        "gender": "male",
+        "problems": true
+    },
+    {
+        "name": "Igor",
+        "surname": "Korol",
+        "age": 27,
+        "gender": "male",
+        "problems": false
+    },
+    {
+        "name": "Kirill",
+        "surname": "Olegov",
+        "age": 27,
+        "gender": "male",
+        "problems": false
+    }
+]
